@@ -31,33 +31,51 @@ import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 
 public class Any23RouteBuilder extends RouteBuilder {
 
+  private static final String BASEURI = "http://mock.foo/bar";
+
   @Override
   public void configure() {
-    from("direct:start").log("Querying dbpedia:Ecuador ").to("http://dbpedia.org/page/Ecuador").unmarshal().any23("http://mock.foo/bar").process(
-            new Processor() {
-      public void process(Exchange exchange) throws Exception {
-        ValueFactory vf = SimpleValueFactory.getInstance();
-        Model model = (Model) exchange.getIn().getBody();
-        IRI propertyLeader = vf.createIRI("http://dbpedia.org/ontology/leader");
-        Set<Value> leaders = model.filter(null, propertyLeader, null).objects();
 
-        List listleaders = new ArrayList();
-        for (Value leader : leaders) {
-          System.out.println(leader);
-          listleaders.add(leader.stringValue().replace("resource", "page"));
-        }
-        exchange.getIn().setBody(listleaders);
+    from("direct:start")
+            .log("Querying dbpedia:Ecuador ")
+            .to("http://dbpedia.org/page/Ecuador")
+            .unmarshal()
+            .any23(BASEURI)
+            .process(new Processor() {
+              public void process(Exchange exchange) throws Exception {
+                ValueFactory vf = SimpleValueFactory.getInstance();
+                Model model = (Model) exchange.getIn().getBody();
 
-      }
-    }).log(" Content: ${body} ")
+                //Selecting the leaders of Ecuador
+                IRI propertyLeader = vf.createIRI("http://dbpedia.org/ontology/leader");
+                Set<Value> leadersResources = model.filter(null, propertyLeader, null).objects();
+                List<String> leadersList = new ArrayList<>();
+                for (Value leader : leadersResources) {
+                  // Transform the leader resource (URI) into  an broweable URL.
+                  // For instance: 
+                  // http://dbpedia.org/resource/Oswaldo_Guayasam%C3%ADn  --> http://dbpedia.org/page/Oswaldo_Guayasam%C3%ADn
+                  String aLeader = leader.stringValue().replace("resource", "page");
+                  leadersList.add(aLeader);
+                }
+                exchange.getIn().setBody(leadersList);
+
+              }
+            })
+            .log(" Content: ${body} ")
+            //Process each leader in a separate route.
+            //In order to extract more information.
             .split(simple("${body}"))
             .to("direct:extractMoreData");
 
     from("direct:extractMoreData")
-            .log("Split ${body}").convertBodyTo(String.class)
+            .log("Split ${body}")
+            .convertBodyTo(String.class)
             .toD("${body}")
-            .unmarshal().any23("http://mock.foo/bar", Any23Type.JSONLD)
+            .unmarshal()
+            //Extract RDF data of the leaders as JSONLD
+            .any23(BASEURI, Any23Type.JSONLD)
             .log(" Result : ${body} ")
             .to("mock:result");
   }
+
 }

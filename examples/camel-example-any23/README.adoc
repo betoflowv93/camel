@@ -1,6 +1,8 @@
-= Telegram API Example
+=  Apache Any23 Example
 
-This example shows how to extract data from a page with RDF content, in this case the Dbpedia page of a country (Ecuador), filter a specific property that contains the URIS of its leaders and use it to obtain more information in JSON format- LD.
+This example shows how to extract data from a page with RDF content using Apache Any23. In this example the Dbpedia webpage of a country (Ecuador) is processed with the camel-any23 dataformat as a RDF4J Model. 
+The extracted information is filtered in order to select the URIS of the country's leaders through the Dbpedia property http://dbpedia.org/ontology/leader . 
+Afterwards, the information of each leader is requested and presented in JSON-LD format.
 
 == How to run
 
@@ -8,10 +10,14 @@ You can run this example using
 
     mvn compile exec:java
 
-== Custom chat and authorization token
+== More information about the camel-any23 Dataformat.
 
-You can specify your "chat id" and "authorization token" in "application.properties" file.
+You can find more information about camel-any23 at the website: https://github.com/apache/camel/blob/master/components/camel-any23/src/main/docs/any23-dataformat.adoc
 
-== More information
+== More information about Apache Any23
+
+You can find more information about Apache Any23 at the website: https://any23.apache.org
+
+== More information about Apache Camel
 
 You can find more information about Apache Camel at the website: http://camel.apache.org/

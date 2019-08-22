@@ -20,9 +20,9 @@ import org.apache.camel.CamelContext;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.StartupListener;
 
-public class Anymsg implements StartupListener {
+public class Any23StartupMessage implements StartupListener {
 
-  public Anymsg() {
+  public Any23StartupMessage() {
   }
 
   @Override

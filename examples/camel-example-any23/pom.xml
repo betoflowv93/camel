@@ -9,7 +9,7 @@
 
     <artifactId>camel-example-any23</artifactId>
     <name>Camel :: Example :: Any23</name>
-    <description>An example that uses any23 dataformat</description>
+    <description>An example that uses the Any23 dataformat</description>
     <packaging>jar</packaging>
     
     
